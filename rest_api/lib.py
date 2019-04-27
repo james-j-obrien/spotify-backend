@@ -9,7 +9,7 @@ def error(mesg):
 def get_hash(i):
 	if 'hashids' not in g:
 		g.hashids = Hashids(salt=current_app.config['SECRET_KEY'])
-	return g.hashids.encode(i)
+	return g.hashids.encode(1, i)
 
 def use_session(view):
 	@functools.wraps(view)
