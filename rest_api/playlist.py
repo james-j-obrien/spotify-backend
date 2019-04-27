@@ -27,7 +27,7 @@ def r_create():
 	next_id = db.incr('next_id')
 	hash_id = get_hash(next_id)
 	db.sadd('playlists', hash_id)
-	return jsonify({'id': hash_id})
+	return jsonify({'id': hash_id}), 201
 
 @spotify_token
 def add_song(playlist, song):
@@ -36,7 +36,7 @@ def add_song(playlist, song):
 		return error('invalid song: bad song uri')
 	db.sadd(f'playlist:{playlist}:songs', song)
 	db.sadd(f'playlist:{playlist}:song:{song}', session['id'])
-	return ':)', 200
+	return ':)', 201
 
 @bp.route('/vote', methods=['POST'])
 @playlist_exists
