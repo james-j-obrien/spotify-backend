@@ -11,8 +11,11 @@ def playlist_exists(view):
 	@functools.wraps(view)
 	def wrapped(*args, **kwargs):
 		db = get_db()
-		json = request.get_json() or {}
-		playlist = json.get('playlist')
+		if request.method == 'GET':
+			playlist = request.args.get('playlist')
+		if request.method == 'POST':
+			json = request.get_json() or {}
+			playlist = json.get('playlist')
 		if not playlist: 
 			return error('invalid payload: missing playlist id'), 400
 		if not db.sismember('playlists', playlist):
@@ -52,7 +55,7 @@ def r_vote(playlist):
 	db.sadd(f'playlist:{playlist}:song:{song}', session['id'])
 	return ':)', 200
 
-@bp.route('/songs', methods=['POST'])
+@bp.route('/songs', methods=['GET'])
 @playlist_exists
 def r_songs(playlist):
 	db = get_db()
@@ -61,7 +64,7 @@ def r_songs(playlist):
 	return jsonify({ 'songs': songs })
 
 
-@bp.route('/shuffle', methods=['POST'])
+@bp.route('/shuffle', methods=['GET'])
 @playlist_exists
 def r_shuffle(playlist):
 	db = get_db()

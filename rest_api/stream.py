@@ -1,6 +1,6 @@
 from flask import Blueprint, Response
-import re
 from rest_api.db import get_db
+from rest_api.playlist import playlist_exists
 
 bp = Blueprint('stream', __name__, url_prefix='/stream')
 
@@ -11,7 +11,8 @@ def vote_stream(db, playlist):
     for message in pubsub.listen():
         yield f'data: {message["channel"].split(":")[-1]}\n\n'
 
-@bp.route('/<playlist>', methods=['GET'])
+@bp.route('/', methods=['GET'])
+@playlist_exists
 def r_stream(playlist):
     db = get_db()
     if not db.sismember('playlists', playlist):

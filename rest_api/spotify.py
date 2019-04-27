@@ -40,11 +40,10 @@ def verify_song(song):
 	})
 	return r.json() and 'error' not in r.json()
 
-@bp.route('/search', methods=['POST'])
+@bp.route('/search', methods=['GET'])
 @spotify_token
 def search():
-	json = request.get_json() or {}
-	query = json.get('query')
+	query = request.args.get('query')
 	if not query:
 		return error('invalid payload: missing query string'), 400
 	r = requests.get(current_app.config['SPOTIFY_SEARCH'], params={
