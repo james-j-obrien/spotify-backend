@@ -35,7 +35,7 @@ def r_create():
 	next_id = db.incr('next_id')
 	hash_id = get_hash(next_id)
 	db.sadd('playlists', hash_id)
-	db.set(f'playlist:{playlist}' name)
+	db.set(f'playlist:{playlist}', name)
 	return jsonify({'id': hash_id}), 201
 
 @spotify_token
