@@ -18,3 +18,10 @@ def use_addr_hash(view):
 		kwargs['addr_hash'] = sha256(request.remote_addr.encode('utf-8')).hexdigest()
 		return view(*args, **kwargs)
 	return wrapped
+
+def use_dummy_addr_hash(view):
+	@functools.wraps(view)
+	def wrapped(*args, **kwargs):
+		kwargs['addr_hash'] = sha256(str(uuid4().encode('utf-8'))).hexdigest()
+		return view(*args, **kwargs)
+	return wrapped

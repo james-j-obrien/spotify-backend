@@ -2,7 +2,7 @@ import functools
 from flask import current_app, Blueprint, request, session, jsonify, redirect, url_for, session
 from rest_api.db import get_db
 from rest_api.spotify import spotify_token, verify_song
-from rest_api.lib import get_hash, error, use_addr_hash
+from rest_api.lib import get_hash, error, use_addr_hash, use_dummy_addr_hash
 import random
 
 bp = Blueprint('playlist', __name__, url_prefix='')
@@ -35,7 +35,7 @@ def r_create():
 	next_id = db.incr('next_id')
 	hash_id = get_hash(next_id)
 	db.sadd('playlists', hash_id)
-	db.set(f'playlist:{playlist}', name)
+	db.set(f'playlist:{hash_id}', name)
 	return jsonify({'id': hash_id}), 201
 
 @spotify_token
@@ -60,6 +60,12 @@ def r_vote(addr_hash, playlist):
 		return add_song(addr_hash, playlist, song)
 	db.sadd(f'playlist:{playlist}:song:{song}', addr_hash)
 	return ':)', 200
+
+@bp.route('/dummy_vote', methods=['POST'])
+@playlist_exists
+@use_dummy_addr_hash
+def r_dummy_vote(addr_hash, playlist):
+	return r_vote(addr_ash, playlist)
 
 @bp.route('/songs', methods=['GET'])
 @playlist_exists
